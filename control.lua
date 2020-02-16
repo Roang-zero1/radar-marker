@@ -105,6 +105,13 @@ function RadarMarker.FindTagsAt (position, range)
 		{{position.x - range, position.y - range}, {position.x + range, position.y + range}})
 end
 
+function RadarMarker.FindRadarsAt (position, range)
+	range = range or 0.1
+	return game.surfaces[1].find_entities_filtered({
+		area={{position.x - range, position.y - range}, {position.x + range, position.y + range}},
+		name='radar', type='radar'})
+end
+
 function RadarMarker.MarkPlacedRadar(entity, quiet)
 	local position = entity.position
 	-- Avoid cluttering the map if there is another nearby marker
@@ -150,7 +157,9 @@ function RadarMarker.EnsureChunkRadarMarked(chunkpos, quiet, position)
 	position = position or RadarMarker.ChunkToPlannedPosition(chunkpos)
 	if position then
 		local tags = RadarMarker.FindTagsAt(position)
-		if #tags == 0 then
+		if #tags == 0
+			and (not plannedLayout.missing or (#RadarMarker.FindRadarsAt(position, 14.5) == 0))
+		then
 			local label = nil
 			if plannedLayout.labelled then
 				label = RadarMarker.GetMarkerLabel(position)
