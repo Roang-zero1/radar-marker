@@ -36,6 +36,11 @@ function RadarMarker.CacheSettings()
 	}
 end
 
+function RadarMarker.ToChunkPosition(pos)
+  local x, y = math.floor(pos.x / 32), math.floor(pos.y / 32)
+  return {x=x,y=y}
+end
+
 function RadarMarker.XIndexToPosition(xindex, offset)
 	return offset + (xindex * plannedLayout.spacing)
 end
@@ -110,8 +115,13 @@ function RadarMarker.MarkPlacedRadar(entity, quiet)
 			'Skipping duplicate radar marker at ' .. serpent.line(position) .. ' index ' .. serpent.line(index))
 		return 0
 	end
-	RadarMarker.MarkRadarAt(position, quiet)
-	return 1
+	if not placedRadarsConfig.missaligned
+		or (RadarMarker.ChunkToPlannedPosition(RadarMarker.ToChunkPosition(position)) == nil)
+	then
+		RadarMarker.MarkRadarAt(position, quiet)
+		return 1
+	end
+	return 0
 end
 
 function RadarMarker.GetMarkerLabel (position)
@@ -367,10 +377,9 @@ script.on_event(defines.events.on_runtime_mod_setting_changed,
 			-- Add or remove placed radar map markers according to the new setting value.
 			placedRadarsConfig.mark = (settings.global['radarmarker-mark-placed-radars'].value ~= "None")
 			placedRadarsConfig.missaligned = (settings.global['radarmarker-mark-placed-radars'].value == "Misalligned")
+			RadarMarker.UnmarkAllPlacedRadars()
 			if placedRadarsConfig.mark then
 				RadarMarker.MarkAllPlacedRadars()
-			else
-				RadarMarker.UnmarkAllPlacedRadars()
 			end
 		elseif e.setting == 'radarmarker-mark-planned-radars'
 		or e.setting == 'radarmarker-planned-radars-spacing'
