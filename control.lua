@@ -19,8 +19,8 @@ end
 
 function RadarMarker.CacheSettings()
 	plannedLayout = {
-    enabled = settings.global['radarmarker-mark-planned-radars'].value ~= "None",
-    missing = settings.global['radarmarker-mark-planned-radars'].value == "Missing",
+		enabled = (settings.global['radarmarker-mark-planned-radars'].value ~= "None"),
+		missing = (settings.global['radarmarker-mark-planned-radars'].value == "Missing"),
 		spacing = settings.global['radarmarker-planned-radars-spacing'].value,
 		dx = settings.global['radarmarker-planned-radars-x-offset'].value,
 		dy = settings.global['radarmarker-planned-radars-y-offset'].value,
@@ -31,8 +31,8 @@ function RadarMarker.CacheSettings()
 		removal = settings.global['radarmarker-announce-removal'].value,
 	}
 	placedRadarsConfig = {
-    mark = settings.global['radarmarker-mark-placed-radars'].value ~= "None",
-    missaligned = settings.global['radarmarker-mark-placed-radars'].value == "Misalligned",
+		mark = (settings.global['radarmarker-mark-placed-radars'].value ~= "None"),
+		missaligned = (settings.global['radarmarker-mark-placed-radars'].value == "Misalligned"),
 	}
 end
 
@@ -309,10 +309,10 @@ function RadarMarker.ChangePlannedLayout()
 	-- This is called for each individual setting that is changed,
 	-- but we want to rearrange the markers only once.
 	-- So check and exit if all relevant settings have already been saved/cached/updated.
-  if placedRadarsConfig.mark == settings.global['radarmarker-mark-placed-radars'].value ~= "None"
-  and placedRadarsConfig.missaligned == settings.global['radarmarker-mark-placed-radars'].value == "Misalligned"
-	and plannedLayout.enabled == settings.global['radarmarker-mark-planned-radars'].value ~= "None"
-  and plannedLayout.missing == settings.global['radarmarker-mark-planned-radars'].value == "Missing"
+	if placedRadarsConfig.mark == (settings.global['radarmarker-mark-placed-radars'].value ~= "None")
+	and placedRadarsConfig.missaligned == (settings.global['radarmarker-mark-placed-radars'].value == "Misalligned")
+	and plannedLayout.enabled == (settings.global['radarmarker-mark-planned-radars'].value ~= "None")
+	and plannedLayout.missing == (settings.global['radarmarker-mark-planned-radars'].value == "Missing")
 	and plannedLayout.spacing == settings.global['radarmarker-planned-radars-spacing'].value
 	and plannedLayout.dx == settings.global['radarmarker-planned-radars-x-offset'].value
 	and plannedLayout.dy == settings.global['radarmarker-planned-radars-y-offset'].value
@@ -332,10 +332,10 @@ function RadarMarker.ChangePlannedLayout()
 		RadarMarker.UnmarkAllPlannedRadars()
 	end
 	-- Save/cache updated settings
-  placedRadarsConfig.mark = settings.global['radarmarker-mark-placed-radars'].value ~= "None"
-  placedRadarsConfig.missaligned = settings.global['radarmarker-mark-placed-radars'].value == "Misalligned"
-	plannedLayout.enabled = settings.global['radarmarker-mark-planned-radars'].value ~= "None"
-	plannedLayout.missing = settings.global['radarmarker-mark-planned-radars'].value == "Missing"
+	placedRadarsConfig.mark = (settings.global['radarmarker-mark-placed-radars'].value ~= "None")
+	placedRadarsConfig.missaligned = (settings.global['radarmarker-mark-placed-radars'].value == "Misalligned")
+	plannedLayout.enabled = (settings.global['radarmarker-mark-planned-radars'].value ~= "None")
+	plannedLayout.missing = (settings.global['radarmarker-mark-planned-radars'].value == "Missing")
 	plannedLayout.spacing = settings.global['radarmarker-planned-radars-spacing'].value
 	plannedLayout.dx = settings.global['radarmarker-planned-radars-x-offset'].value
 	plannedLayout.dy = settings.global['radarmarker-planned-radars-y-offset'].value
@@ -359,10 +359,14 @@ script.on_event(defines.events.on_runtime_mod_setting_changed,
 			announceConfig.removal = settings.global['radarmarker-announce-removal'].value
 		elseif e.setting == 'radarmarker-mark-placed-radars'
 			-- Might have already been actioned by ChangePlannedLayout().
-			and placedRadarsConfig.mark ~= settings.global['radarmarker-mark-placed-radars'].value
+			and (
+				placedRadarsConfig.mark ~= (settings.global['radarmarker-mark-placed-radars'].value ~= "None")
+				or placedRadarsConfig.missaligned ~= (settings.global['radarmarker-mark-placed-radars'].value == "Misalligned")
+			)
 			then
 			-- Add or remove placed radar map markers according to the new setting value.
-			placedRadarsConfig.mark = settings.global['radarmarker-mark-placed-radars'].value
+			placedRadarsConfig.mark = (settings.global['radarmarker-mark-placed-radars'].value ~= "None")
+			placedRadarsConfig.missaligned = (settings.global['radarmarker-mark-placed-radars'].value == "Misalligned")
 			if placedRadarsConfig.mark then
 				RadarMarker.MarkAllPlacedRadars()
 			else
