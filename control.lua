@@ -37,8 +37,8 @@ function RadarMarker.CacheSettings()
 end
 
 function RadarMarker.ToChunkPosition(pos)
-  local x, y = math.floor(pos.x / 32), math.floor(pos.y / 32)
-  return {x=x,y=y}
+	local x, y = math.floor(pos.x / 32), math.floor(pos.y / 32)
+	return {x=x,y=y}
 end
 
 function RadarMarker.XIndexToPosition(xindex, offset)
@@ -241,8 +241,14 @@ end
 
 script.on_event({defines.events.on_built_entity, defines.events.on_robot_built_entity},
 	function(e)
+		if plannedLayout.missing then
+			local chunkpos = RadarMarker.ToChunkPosition(e.created_entity.position)
+			if RadarMarker.ChunkToPlannedPosition(chunkpos) then
+				RadarMarker.UnmarkChunkRadar(chunkpos, placedRadarsConfig.mark and not placedRadarsConfig.missaligned)
+			end
+		end
 		if e.created_entity.name == 'radar' and e.created_entity.type == 'radar'
-			and placedRadarsConfig.mark
+		and placedRadarsConfig.mark
 		then
 
 			-- There have been some spurious markers showing up.
